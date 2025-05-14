@@ -1,0 +1,194 @@
+
+=main
+	@FlexView: flow=column
+		@MenuBar: id=MENU, use=mainmenu, fixed=1
+		@SplitView: flex=1, size=0.25
+			@TabView:
+				@TreeView: dir=./, title=Tree, name=one
+			@TabView: id=TABVIEW
+				@WebView: title=POC
+#EditView: id=EDITOR, title=Editor
+				@FileExplorer: title=File Explorer
+				@TableView: id=test_grid, rowNumbers=true,frameCells=false, headers = [User Name|16, User ID|12, Role|10, E-Mail|2fr|Right|30], Role=[admin, editor, viewer], unique=[User ID, Role], use=test_data, title=Table 
+				
+		
+		@InfoBar: id=INFOBAR, fixed=1, gap=1
+			: flex=1
+			0 x 0: flex=1, name=two
+			Summer Is Hot: flex=2, align=right, name=three
+
+
+$mainmenu
+	File: 
+		Open:	action=OPEN
+		Save:	action=SAVE
+		-
+		Save As: action=SAVE_AS
+		-
+		Close:	action=CLOSE
+		-
+		Exit: 	action=EXIT
+	Edit
+		Undo: 	action=UNDO
+		Redo: 	action=REDO
+		-
+		Cut: 	action=CUT
+		Copy: 	action=COPY
+		Paste:	action=PASTE
+
+	Options: 
+		Show White Space: type=toggle, name=SHOW_WHITE_SPACE
+	-
+	Help
+		Documentation
+		About ...
+
+
+%shapes
+	polygon: details=1
+		triangle
+			equilateral
+			isosceles
+			scalene
+		quadrangle: expanded=true
+			parallelogram
+				rectangle
+					square
+			trapezoid
+	states
+		Alaska
+		Alabama
+		Arkansas
+		American Samoa
+		Arizona
+			Apache
+			Cochise
+			Coconino
+			Gila
+			Graham
+			Greenlee
+			La Paz
+			Maricopa 
+			Mohave
+			Navajo
+			Pima
+			Pinal
+			Santa Cruz
+			Yavapai
+			Yuma
+		California
+			Alameda
+			Alpine
+			Amador
+			Butte
+			Calaveras
+			Colusa
+			Contra Costa
+			Del Norte
+			El Dorado
+			Fresno
+			Glenn
+			Humboldt
+			Imperial
+			Inyo
+			Kern
+			Kings
+			Lake
+			Lassen
+			Los Angeles
+			Madera
+			Marin
+			Mariposa
+			Mendocino
+			Merced
+			Modoc
+			Mono
+			Monterey
+			Napa
+			Nevada
+			Orange
+			Placer
+			Plumas
+			Riverside
+			Sacramento
+			San Benito
+			San Bernardino
+			San Diego
+			San Francisco
+			San Joaquin
+			San Luis Obispo
+			San Mateo
+			Santa Barbara
+			Santa Clara
+			Santa Cruz
+			Shasta
+			Sierra
+			Siskiyou
+			Solano
+			Sonoma
+			Stanislaus
+			Sutter
+			Tahoe RPA
+			Tehama
+			Trinity
+			Tulare
+			Tuolumne
+			Ventura
+			Yolo
+			Yuba
+		Colorado
+		Connecticut
+		District of Columbia
+	
+
+~test_data
+	name 1, user 1, admin, email 1
+	name 2, user 2, role 2, email 2
+	name 3, user 3, editor, email 3
+	name 4, user 4, role 4, email 4
+	name 5, user 5, role 5, email 5
+	name 6, user 6, viewer, email 6
+	name 7, user 7, role 7, email 7
+	name 8, user 8, role 8, email 8
+	name 9, user 9, role 9, email 9
+	name 10, user 10, role 10, email 10
+	name 11, user 11, role 11, email 11
+	name 12, user 12, role 12, email 12
+	name 13, user 13, role 13, email 13
+	name 14, user 14, role 14, email 14
+	name 15, user 15, role 15, email 15
+	name 16, user 16, role 16, email 16
+	name 17, user 17, role 17, email 17
+	name 18, user 18, role 18, email 18
+	name 19, user 19, role 19, email 19
+	name 20, user 20, role 20, email 20
+	name 21, user 21, role 21, email 21
+	name 22, user 22, role 22, email 22
+	name 23, user 23, role 23, email 23
+	name 24, user 24, role 24, email 24
+	name 25, user 25, role 25, email 25
+	name 26, user 26, role 26, email 26
+	name 27, user 27, role 27, email 27
+	name 28, user 28, role 28, email 28
+	name 29, user 29, role 29, email 29
+	name 30, user 30, role 30, email 30
+	name 31, user 31, role 31, email 31
+	name 32, user 32, role 32, email 32
+	name 33, user 33, role 33, email 33
+	name 34, user 34, role 34, email 34
+	name 35, user 35, role 35, email 35
+	name 36, user 36, role 36, email 36
+	name 37, user 37, role 37, email 37
+	name 38, user 38, role 38, email 38
+	name 39, user 39, role 39, email 39
+	name 40, user 40, role 40, email 40
+	name 41, user 41, role 41, email 41
+	name 42, user 42, role 42, email 42
+	name 43, user 43, role 43, email 43
+	name 44, user 44, role 44, email 44
+	name 45, user 45, role 45, email 45
+	name 46, user 46, role 46, email 46
+	name 47, user 47, role 47, email 47
+	name 48, user 48, role 48, email 48
+	name 49, user 49, role 49, email 49
+	name 50, user 50, role 50, email 50

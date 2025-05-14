@@ -1,0 +1,17 @@
+{
+  "name": "cui_02",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "copy-paste": "^2.1.1",
+    "fast-xml-parser": "^5.2.1",
+    "node-html-parser": "^7.0.1"
+  }
+}

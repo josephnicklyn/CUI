@@ -1,0 +1,124 @@
+
+
+=main
+	@FlexView: flow=column, gap=1
+		@MenuBar: fixed=1
+""
+			File
+				Open:   command=CMD_OPEN
+				Close:  command=CMD_CLOSE
+				-
+				Exit:   command=CMD_EXIT
+			Edit
+				Undo:   command=CMD_UNDO
+				Redo:   command=CMD_REDO
+				-
+				Cut:    command=CMD_CUT
+				Copy:   command=CMD_COPY
+				Paste:  command=CMD_PASTE
+			-	
+			Help
+""
+
+"""
+		@FlexView: flow=row, flex=1
+			@Layout: fixed=4
+			@Layout: flex=1
+			@Layout: flex=1
+
+
+		@GridView: id=test_grid, cols = [16, 12, 1fr, 2fr], headers = [User Name, User ID, Role, E-Mail ]
+			@input: prompt=User Name 1
+			@input: prompt=User ID 1
+			@input: prompt=Role 1
+			@input: prompt=E-Mail 1
+			
+			@input: prompt=User Name 2
+			@input: prompt=User ID 2
+			@input: prompt=Role 2
+			@input: prompt=E-Mail 2
+		
+			@input: prompt=User Name 3
+			@input: prompt=User ID 3
+			@input: prompt=Role 3
+			@input: prompt=E-Mail 3
+			
+			@input: prompt=User Name 4
+			@input: prompt=User ID 4
+			@input: prompt=Role 4
+			@input: prompt=E-Mail 4
+			
+			@input: prompt=User Name 5
+			@input: prompt=User ID 5
+			@input: prompt=Role 5
+			@input: prompt=E-Mail 5
+			
+			@input: prompt=User Name 6
+			@input: prompt=User ID 6
+			@input: prompt=Role 6
+			@input: prompt=E-Mail 6
+			
+			@input: prompt=User Name 7
+			@input: prompt=User ID 7
+			@input: prompt=Role 7
+			@input: prompt=E-Mail 7
+			
+			@input: prompt=User Name 8
+			@input: prompt=User ID 8
+			@input: prompt=Role 8
+			@input: prompt=E-Mail 8
+			
+			@input: prompt=User Name 9
+			@input: prompt=User ID 9
+			@input: prompt=Role 9
+			@input: prompt=E-Mail 9
+			
+			@input: prompt=User Name 10
+			@input: prompt=User ID 10
+			@input: prompt=Role 10
+			@input: prompt=E-Mail 10
+			
+			@input: prompt=User Name 11
+			@input: prompt=User ID 11
+			@input: prompt=Role 11
+			@input: prompt=E-Mail 11
+			
+			@input: prompt=User Name 12
+			@input: prompt=User ID 12
+			@input: prompt=Role 12
+			@input: prompt=E-Mail 12
+			
+			@input: prompt=User Name 13
+			@input: prompt=User ID 13
+			@input: prompt=Role 13
+			@input: prompt=E-Mail 13
+			
+			@input: prompt=User Name 14
+			@input: prompt=User ID 14
+			@input: prompt=Role 14
+			@input: prompt=E-Mail 14
+			
+			@input: prompt=User Name 15
+			@input: prompt=User ID 15
+			@input: prompt=Role 15
+			@input: prompt=E-Mail 15
+			
+			@input: prompt=User Name 16
+			@input: prompt=User ID 16
+			@input: prompt=Role 16
+			@input: prompt=E-Mail 16
+	
+
+		@SplitView: id=main_view, orientation=horizontal, size=-5, min=4, snap=2, flex=3
+			@FlexView:  flow=row
+			@TabView:   id=CONTENT_MAIN
+"""
+		@InfoBar: fixed = 1
+			: flex=1
+			: flex=1
+			SUMMER IS HOT: flex=2
+=credentials
+	@InputForm
+		@Input: type=text, prompt=User ID
+		@Input: type=text, prompt=Host
+		@Input: type=pass, prompt=Password
