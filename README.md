@@ -26,6 +26,12 @@ All is a work-in-progress many features need to be polished/revisited/updated
   > Basic context-aware menubar 
 
 
+
+
+
 ![image](https://github.com/user-attachments/assets/0b0dfa14-31de-416f-989b-5102a95c3a50)
 (screen shot of an IDE-like tool using the framework - also used to update its self while testing the various components)
 
+
+![image](https://github.com/user-attachments/assets/bc0e46cc-c509-4f7e-9524-df657909bc9a)
+(demo of a file dialog)
