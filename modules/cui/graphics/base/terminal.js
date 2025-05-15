@@ -229,7 +229,7 @@ function parseKey(buffer) {
         }
     }
 
-    console.log("\x1b[1;1H", {str, code, name});
+    // console.log("\x1b[1;1H", {str, code, name});
 
         
     return {

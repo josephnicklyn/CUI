@@ -381,7 +381,9 @@ class Layout extends Node {
         if (event.relX >= this.sceneRight) {
             return { axis: 'vertical', bounds: this.getVerticalScrollbarBounds() };
         }
-        if (this.#scroll?.hbar && event.relY >= this.sceneBottom && event.relX > (this.#scroll.hbar.scrollX-3)) {
+
+        if (this.#scroll?.hbar && event.relY >= this.sceneBottom && event.relX > (this.#scroll.hbar.left-3)) {
+        
             return { axis: 'horizontal', bounds: this.#scroll.hbar };
         }
         return null;

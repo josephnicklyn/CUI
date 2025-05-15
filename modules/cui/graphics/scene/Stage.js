@@ -250,9 +250,9 @@ class Stage extends TermBuffer {
 
     handleResizeEvent(event) {
         let {rows, columns} = process.stdout;
-        let w = columns-32;
+        let w = columns-42;
         let h = rows-6;
-        let x = 30;// Math.floor(columns/2-w/2);
+        let x = 40;// Math.floor(columns/2-w/2);
         let y = Math.max(1, Math.floor(rows/2-h/2));    
         this.layoutAndRender(h, w, y, x);    
     }
@@ -265,8 +265,6 @@ class Stage extends TermBuffer {
                 this.#ids.TABVIEW.addChild(openFile(path));
             } else if (action.type === 'OPEN') {
                 this.showFileDialog((data) => {
-                    console.log("\x1b[1;1H", {data});
-        
                     let path = data.path;
                     this.#ids.TABVIEW.addChild(openFile(path));
                 }, {title: "Open File ...", path: this.filePath});

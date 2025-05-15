@@ -88,7 +88,7 @@ class ListBox extends Layout {
     }
 
     render(now = false) {
-        if ( !this.getStage()) {
+        if ( !this.getStage() || !this.isShowing()) {
             return;
         }
         termutils.QCODES.CURSOR_HIDE();

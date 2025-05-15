@@ -22,7 +22,7 @@ class ComboBox extends Layout {
         
         this.#listBox = new ListBox({...options, framed: false}, this.getStage());
         this.#listBox.addItems("One", "Two", "Three", "Four", "Five", "Six");
-        this.#dropDown =  new DropDown(this, this.#listBox);//, this.selectMe.bind(this));
+        this.#dropDown =  new DropDown(this, this.#listBox);
         this.#dropDown.setOnActionListener(this.onSelectItem.bind(this))
         this.#listBox.setOnActionListener(this.onSelectItem.bind(this));
 
@@ -36,10 +36,11 @@ class ComboBox extends Layout {
         this.#listBox.setDisplay(true);
         const value = this.#txtValue.value.trim();
         const list = this.#listBox;
-        list.setDisplay(true);
         this.#btnGo.setText('▼');
-        this.render(true);
         this.#dropDown.show({...this.rect, height: 6});
+        list.setDisplay(true);
+        this.render(true);
+        
     }
 
     layout() {
@@ -79,7 +80,6 @@ class ComboBox extends Layout {
             this.#txtValue.value = action?.text;
         }
     }
-    
 }
 
 module.exports = ComboBox;
