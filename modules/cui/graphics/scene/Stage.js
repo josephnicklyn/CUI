@@ -250,10 +250,16 @@ class Stage extends TermBuffer {
 
     handleResizeEvent(event) {
         let {rows, columns} = process.stdout;
-        let w = columns-42;
-        let h = rows-6;
-        let x = 40;// Math.floor(columns/2-w/2);
-        let y = Math.max(1, Math.floor(rows/2-h/2));    
+        // let w = columns-42;
+        // let h = rows-6;
+        // let x = 40;// Math.floor(columns/2-w/2);
+        // let y = Math.max(1, Math.floor(rows/2-h/2));    
+        let w = columns-20;
+        let h = rows-2;
+        let x = 10;
+        let y = 1;
+        
+        
         this.layoutAndRender(h, w, y, x);    
     }
     

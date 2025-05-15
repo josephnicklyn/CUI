@@ -166,24 +166,26 @@ class InputForm extends Layout {
         this.getStage().relativePoint(event);
         
         let msg = this.getParent().hoverButton(event);
-        console.log("\x1b[1;1H", {msg});
+        if (msg) {
+            termutils.QCODES.CURSOR_HIDE();
 
-        if (msg===true) {
-            this.#focused.render?.(true);
-            this.#wasOver = true;
-            return;
-        } else if (msg === 'cancel') {
-            this.cancel();
-            return;
-        } else if (msg === 'submit') {
-            this.submit();
-            return;
-        }
-        
-        if (this.#wasOver) {
-            this.#wasOver = false;
-            this.getParent().hoverButton(false);
-            this.#focused.render?.(true);
+            if (msg===true) {
+                this.#focused.render?.(true);
+                this.#wasOver = true;
+                return;
+            } else if (msg === 'cancel') {
+                this.cancel();
+                return;
+            } else if (msg === 'submit') {
+                this.submit();
+                return;
+            }
+            
+            if (this.#wasOver) {
+                this.#wasOver = false;
+                this.getParent().hoverButton(false);
+                this.#focused.render?.(true);
+            }
         }
 
         let eventTarget = this.clickTest(event.relY, event.relX);

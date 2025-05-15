@@ -39,7 +39,7 @@ class TermBuffer {
   }
   
   resizeBuffer(height=25, width=80, y=0, x=0, doRender=true) {
-    // console.clear();
+    console.clear();
     
     this.#rect.x = x;
     this.#rect.y = y;

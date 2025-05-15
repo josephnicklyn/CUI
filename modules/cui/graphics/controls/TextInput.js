@@ -45,6 +45,8 @@ class TextInput extends Layout {
                 if ((this.readonly && ["ctrl-C", "ctrl-A"].includes(event.name)) || !this.readonly) {
                     this.handleKeyEvent?.(event);
                 }
+            } else {
+                this.handleKeyEvent?.(event);
             }
         } else if (event.type === "MouseEvent") {
             this.handleMouseEvent?.(event);            
