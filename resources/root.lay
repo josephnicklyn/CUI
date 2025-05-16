@@ -6,8 +6,8 @@
 			@TabView:
 				@TreeView: dir=./, title=Tree, name=one
 			@TabView: id=TABVIEW
+				@TerminalView: title=TermX
 				@WebView: title=POC
-#EditView: id=EDITOR, title=Editor
 				@FileExplorer: title=File Explorer
 				@TableView: id=test_grid, rowNumbers=true,frameCells=false, headers = [User Name|16, User ID|12, Role|10, E-Mail|2fr|Right|30], Role=[admin, editor, viewer], unique=[User ID, Role], use=test_data, title=Table 
 				

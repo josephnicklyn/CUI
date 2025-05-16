@@ -1,5 +1,5 @@
 const Layout = require("../base/Layout");
-const {TextBuffer} = require("../TextBuffer");
+const {TextBuffer} = require("../extras/TextBuffer");
 const termutils = require("../base/termutils");
 const Clipboard = require("../base/Clipboard");
 
@@ -217,7 +217,6 @@ class EditView extends Layout {
             case 'KeyEvent':
                 return this.handleKeyEvent(event);
         }
-        
     }
 
      getCharIndexFromVisualCol(str, visualCol, tabSize = 4) {
@@ -610,7 +609,6 @@ class EditView extends Layout {
         }
         return false;
     }
-    
 
     getMenuContext() {
         return {
@@ -627,16 +625,16 @@ class EditView extends Layout {
 
 
 function openFile(filePath) {
-    let view = EditView.getActiveFiles()[filePath];        
-    let baseName = path.basename(filePath);
-
+    let absPath = FILE_MANAGER.resolve(filePath);
+    let view = EditView.getActiveFiles()[absPath];        
+    let baseName = path.basename(absPath);
     if (!view) {
         view = new EditView({title:baseName});
-        if (fs.existsSync(filePath)) {
-            view.loadFile(filePath);
+        if (fs.existsSync(absPath)) {
+            view.loadFile(absPath);
         }
 
-        EditView.set(filePath, view);
+        EditView.set(absPath, view);
         
     }
     return view;

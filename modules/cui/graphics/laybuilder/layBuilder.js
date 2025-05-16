@@ -13,7 +13,8 @@ let OptionsBar = require("../views/OptionsBar");
 let TextInput = require("../controls/TextInput");
 let OptionsView = require("../views/OptionView");
 let Button = require("../controls/Button");
-let WebView = require("../views/WebView")
+let WebView = require("../views/WebView");
+let TerminalView = require("../views/TerminalView");
 
 const {EditView} = require("../views/EditView");
 // const Stage = require("../scene/Stage");
@@ -35,7 +36,8 @@ const VIEW_ROUTES = {
     "textinput": TextInput,
     "optionsview": OptionsView,
     "button": Button,
-    "webview": WebView
+    "webview": WebView,
+    "terminalview": TerminalView
 }
 
 const buildView = (view, structures) => {

@@ -168,7 +168,7 @@ class InputForm extends Layout {
         let msg = this.getParent().hoverButton(event);
         if (msg) {
             termutils.QCODES.CURSOR_HIDE();
-
+            
             if (msg===true) {
                 this.#focused.render?.(true);
                 this.#wasOver = true;

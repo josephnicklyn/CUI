@@ -78,6 +78,9 @@ class ComboBox extends Layout {
             this.#listBox.setDisplay(false);
             this.#dropDown.release();
             this.#txtValue.value = action?.text;
+            if (this.hasActionListener?.()) {
+                this.sendAction(this.#txtValue.value, "enter");
+            }
         }
     }
 }

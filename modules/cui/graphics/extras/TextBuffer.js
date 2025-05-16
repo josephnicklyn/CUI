@@ -1,4 +1,4 @@
-const utils = require("./base/termutils");
+const utils = require("../base/termutils");
 /**
 
  * THE MEMENTO stores changes of a TextBuffer.

@@ -20,6 +20,15 @@ class TextInput extends Layout {
         return this.getAttribute("value", "");
     }
 
+    clear() {
+        this.#scrollLeft = 0;
+        this.#cursorPos = 0;
+        this.#selectionAnchor = null;
+        this.#selectionFocus = null;
+        this.value = "";
+        this.render(true);
+    }
+
     set value(value) {
         this.setAttribute('value', value);
         this.#cursorPos = 0;
@@ -196,7 +205,7 @@ class TextInput extends Layout {
                 break;
             case "enter":
                 if (this.hasActionListener?.()) {
-                    this.sendAction();
+                    this.sendAction(this.value, "enter");
                 }
                 break;
             default:

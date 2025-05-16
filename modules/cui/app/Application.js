@@ -58,8 +58,8 @@ class Application {
     }
     mainEventHandler(event) {
         if (event.type === 'CommandEvent') {
-            if (event.command.action === 'EXIT') {
-                terminal.exitApplication();
+            if (event.command === 'EXIT') {
+                terminal.exitApplication(true);
                 return;
             }
         } else {

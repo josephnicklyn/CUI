@@ -115,7 +115,7 @@ function decodeMouseEvent(code, isRelease, x, y) {
     return __MOUSE_EVENT;
 }
 
-function exitApplication() {
+function exitApplication(sayGoodBye=false) {
     process.stdin.write('\x1b[?1000l');
     process.stdin.write('\x1b[?1002l');
     process.stdin.write('\x1b[?1003l');
@@ -124,7 +124,15 @@ function exitApplication() {
     process.stdin.setRawMode(false);
     console.clear();
 
-    process.exit();
+    if (sayGoodBye===true) {
+        process.stdout.write("\x1b[13;13H\x1b[0mGood Bye!!!")
+        setTimeout(() => {
+            console.clear();
+            process.exit();
+        }, 4000);
+    } else {
+        process.exit();
+    }
 }
 
 function parseKey(buffer) {

@@ -604,6 +604,7 @@ class TermBuffer {
     this.renderRegion(ty, tx, this.height-2, this.width);
   }
 
+
 }
 
 module.exports = TermBuffer;

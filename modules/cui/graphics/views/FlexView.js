@@ -87,8 +87,8 @@ class FlexView extends Layout {
             child.rect = pRect;
             if (child instanceof Layout) {
                 child.layout(pRect);
-                if (child.getParent().isShowing())
-                    child.render(false);
+                // if (child.getParent().isShowing())
+                child.render(true);
             }
 
             pos += nodeSize + this.gap;
