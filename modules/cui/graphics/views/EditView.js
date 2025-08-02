@@ -217,6 +217,7 @@ class EditView extends Layout {
             case 'KeyEvent':
                 return this.handleKeyEvent(event);
         }
+        
     }
 
      getCharIndexFromVisualCol(str, visualCol, tabSize = 4) {
@@ -367,6 +368,8 @@ class EditView extends Layout {
     }
 
     drawEditor() {
+        
+        this.getStage().setClip(this.rect);
         let lines = this.#textBuffer.lines;
         let color = termutils.COLORS.editor.fill;
         let selectedColor = termutils.COLORS.editor.selected;
@@ -609,6 +612,7 @@ class EditView extends Layout {
         }
         return false;
     }
+    
 
     getMenuContext() {
         return {
@@ -625,16 +629,16 @@ class EditView extends Layout {
 
 
 function openFile(filePath) {
-    let absPath = FILE_MANAGER.resolve(filePath);
-    let view = EditView.getActiveFiles()[absPath];        
-    let baseName = path.basename(absPath);
+    let view = EditView.getActiveFiles()[filePath];        
+    let baseName = path.basename(filePath);
+
     if (!view) {
         view = new EditView({title:baseName});
-        if (fs.existsSync(absPath)) {
-            view.loadFile(absPath);
+        if (fs.existsSync(filePath)) {
+            view.loadFile(filePath);
         }
 
-        EditView.set(absPath, view);
+        EditView.set(filePath, view);
         
     }
     return view;

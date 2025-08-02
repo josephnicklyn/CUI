@@ -1,4 +1,4 @@
-const TermBuffer = require("../base/TermBuffer");
+const {CUITermBuffer} = require("../base/TermBuffer");
 const termutils = require("../base/termutils")
 const DebugInfoView = require("../views/DebugInfoView");
 const {openFile} = require("../views/EditView");
@@ -9,7 +9,7 @@ const FILE_MANAGER = require("../../FileManager");
 const FileDialog = require("./FileDialog");
 const InputDialog = require("./InputDialog");
 
-class Stage extends TermBuffer {
+class Stage extends CUITermBuffer {
     #root = null
     #ids = {};
     #names = {};
@@ -250,14 +250,16 @@ class Stage extends TermBuffer {
 
     handleResizeEvent(event) {
         let {rows, columns} = process.stdout;
-        let w = columns-42;
-        let h = rows-6;
-        let x = 40;// Math.floor(columns/2-w/2);
-        let y = Math.max(1, Math.floor(rows/2-h/2));    
-        // let w = columns-20;
-        // let h = rows-2;
-        // let x = 10;
-        // let y = 1;
+        // let w = columns-42;
+        // let h = rows-6;
+        // let x = 40;// Math.floor(columns/2-w/2);
+        // let y = Math.max(1, Math.floor(rows/2-h/2));    
+        // let w = columns-1;
+        // let h = rows-1;
+        let w = columns-1;
+        let h = rows-1;
+        let x = 0;
+        let y = 0;
         
         
         this.layoutAndRender(h, w, y, x);    

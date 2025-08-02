@@ -1,19 +1,7 @@
+const TermStyle = require('./termstyle');
 const utils = require("./termutils");
-
 const util = require('util');
 
-function toANSI(color, defaultStyle) {
-    const parts = [];
-    // if (this.mode) 
-    // parts.push(color.mode || "0");
-    let fg = color.fg?color.fg:defaultStyle.fg;
-    let bg = color.bg?color.bg:defaultStyle.bg;
-    // parts.push(`38;2;${fg}`);
-    // parts.push(`48;2;${bg}`);
-    parts.push(`38;2;${fg}`);
-    parts.push(`48;2;${bg}`);
-    return parts.length ? `\x1b[${parts.join(';')}m` : '';
-}
 /**
  * TermBuffer manages a 2D terminal rendering buffer, handling text, styles, and regions.
  * It supports primary and secondary buffers, with coordinate transformations and ANSI output.
@@ -38,19 +26,10 @@ class TermBuffer {
     this.#BUFFER = this.createBuffer();
   }
 
-  scroll() {
+  scrollUp() {
     this.#BUFFER.shift();
     this.#BUFFER.push(Array.from({ length: this.width }, () => ({ char: ' ', style: this.#defaultStyle })));
-    
   }
-
-  removeLine(index) {
-    if (index >= 0 && index < this.height) {
-      this.#BUFFER.splice(index, 1);
-      this.#BUFFER.push(Array.from({ length: this.width }, () => ({ char: ' ', style: this.#defaultStyle })));
-      }
-  }
-
   /**
    * Converts buffer coordinates to 1-based terminal coordinates.
    * @param y - Buffer y-coordinate.
@@ -63,8 +42,8 @@ class TermBuffer {
     return { y: absY + 1, x: absX + 1 }; // 1-based terminal coordinates
   }
   
-  resizeBuffer(height=25, width=80, y=0, x=0, doRender=false, doClear=false) {
-    if (doClear) console.clear();
+  resizeBuffer(height=25, width=80, y=0, x=0, doRender=true) {
+    console.clear();
     
     this.#rect.x = x;
     this.#rect.y = y;
@@ -78,7 +57,7 @@ class TermBuffer {
   }
 
   createBuffer() {
-    const defaultStyle = this.#defaultStyle;
+    const defaultStyle = TermStyle.fromObject(this.#defaultStyle);
     const row = () =>
       Array(this.#rect.width)
         .fill()
@@ -91,10 +70,18 @@ class TermBuffer {
   clear(style=this.defaultStyle) {
     for(let y = 0; y < this.height; y++) {
       for(let x = 0; x < this.width; x++) {
-        this.#BUFFER[y][x] = {char:' ', style:toANSI({...style, mode:"0"})};
+        this.#BUFFER[y][x] = {char:' ', style:TermStyle.fromObject({...style, mode:"0"})};
       }  
     }
   }
+
+  getChar(y, x) {
+    if (this.isValidCoord(y, x)) {
+      return this.#BUFFER[y][x];
+    }
+    return { char: ' ', style: TermStyle.fromObject(this.#defaultStyle) };
+  }
+
 
   #clipRegion = null;
   setClip(clipRegion) {
@@ -124,88 +111,35 @@ class TermBuffer {
      * @param bw - Width of the region (default: buffer width).
      * @param overrideStyle - Optional style to override cell styles.
      */
-  crenderRegion(by = 0, bx = 0, bh = this.#rect.height, bw = this.#rect.width, overrideStyle = null) {
-    
-    let prevStyle = null;
-    const bbuff = ['\x1b[H'];
-    for (let y=0; y < this.height; y++) {
-      let output = '';
-      for (let x = 0; x < this.width; x++) {
-        const { char, style } = this.#BUFFER[y][x];
-        const effectiveStyle = toANSI(style, this.#defaultStyle);
-        if (!prevStyle || (effectiveStyle !== prevStyle)) {
-          // output += effectiveStyle;
-          prevStyle = effectiveStyle;
-        }
-        output += char;
-      }
-      const { y: termY, x: termX } = this.toTerminalCoords(y + by, bx);
-      bbuff.push(`${output}`);
-      prevStyle = null;
-    }
-  
-    bbuff.push('\x1b[0m');
-    process.stdout.write(bbuff.join('\r\n'));
-  }
-
-  
   renderRegion(by = 0, bx = 0, bh = this.#rect.height, bw = this.#rect.width, overrideStyle = null) {
-    let z = 4;
-
     let prevStyle = null;
     const bbuff = [];
     for (let y = 0; y < bh; y++) {
       if (y + by >= this.#rect.height) break;
       if (y + by < 0) continue;
+  
       let output = '';
       for (let x = 0; x < bw; x++) {
         if (x + bx >= this.#rect.width) break;
         if (x + bx < 0) continue;
         const { char, style } = this.#BUFFER[y + by][x + bx];
-        const effectiveStyle = toANSI(style, this.#defaultStyle);
-        if (!prevStyle || (effectiveStyle !== prevStyle)) {
-          output += effectiveStyle;
+        const effectiveStyle = TermStyle.fromObject(overrideStyle ?? style);
+        if (!prevStyle || !effectiveStyle.equals(prevStyle)) {
+          output += effectiveStyle.toANSI();
           prevStyle = effectiveStyle;
         }
         output += char;
       }
+  
       const { y: termY, x: termX } = this.toTerminalCoords(y + by, bx);
-      bbuff.push(`\x1B[${termY};${termX}H${output}`);
-      prevStyle = null;
-    }
-  
-    process.stdout.write(bbuff.join('\n'));
-  }
-  
-renderView(topRow, height) {
-    let z = 4;
-    if (topRow < 0) topRow = 0;
-    let prevStyle = null;
-    const bbuff = [];
-    let top = this.y;
-    let left = this.x;
-    for (let y = 0; y < height; y++) {
-      if (y+topRow >= this.#rect.height) break;
-      let output = '';
-      for (let x = 0; x < this.width; x++) {
-        if (x >= this.#rect.width) break;
-        if (x < 0) continue;
-        const { char, style } = this.#BUFFER[y+topRow][x];
-        const effectiveStyle = toANSI(style, this.#defaultStyle);
-        if (!prevStyle || (effectiveStyle !== prevStyle)) {
-          output += effectiveStyle;
-          prevStyle = effectiveStyle;
-        }
-        output += char;
-      }
-      bbuff.push(`\x1b[${y+top};${left}H${output}`);
+      bbuff.push(`\x1b[${termY};${termX}H${output}`);
       prevStyle = null;
     }
   
     bbuff.push('\x1b[0m');
     process.stdout.write(bbuff.join(''));
   }
-
+  
   renderRect(src_rect, style=null) {
     this.renderRegion(
       src_rect.y, src_rect.x, src_rect.height, src_rect.width, style
@@ -218,42 +152,10 @@ renderView(topRow, height) {
     )
   }
 
-  copyShadow(rect, rf = -40, gf = -40, bf = -40, dimMore = 20) {
-      // const region = this.copyRegion(0, 0, this.height, this.width);
-      // const t = rect.sceneY, l = rect.sceneX;
-      // const r = l + rect.width, b = t + rect.height;
-
-      // for (let row = 0; row < this.height; row++) {
-      //     for (let col = 0; col < this.width; col++) {
-      //         if (!this.isValidCoord(row, col)) continue;
-
-      //         let { style } = this.#BUFFER[row][col];
-
-      //         const isEdge = (
-      //             (row === b && col > l && col <= r) ||
-      //             (col === r && row > t && row < b)
-      //         );
-
-      //         this.#BUFFER[row][col].style = this.dimRgbStyles(
-      //             style,
-      //             isEdge ? rf - dimMore : rf,
-      //             isEdge ? gf - dimMore : gf,
-      //             isEdge ? bf - dimMore : bf
-      //         );
-      //     }
-      // }
-
-      return null;//region;
-  }
-
   render() {
-    this.renderRegion(
-      0, 0,
-      this.height,
-      this.width
-    );
+    this.renderRegion();
   }
-  get buffer() {
+  get BUFFER() {
     return this.#BUFFER;
   }
 
@@ -268,7 +170,7 @@ renderView(topRow, height) {
         if (srcRow >= buffer.height) break;
 
         for (let col = 0; col < rect.width; col++) {
-            const cell = buffer.getCell(srcRow, col);
+            const cell = buffer.getChar(srcRow, col);
             this.setChar(
                 rect.sceneY + row,
                 rect.sceneX + col,
@@ -377,6 +279,57 @@ renderView(topRow, height) {
     );
   }
 
+  dimRgbStyles(style, rf = -40, gf = -40, bf = -40) {
+    const clamp = (v) => Math.max(0, Math.min(255, v));
+  
+    const parseRgb = (str) => str.split(";").map(s => parseInt(s, 10));
+    const toRgbString = (rgb) => rgb.map(clamp).join(";");
+  
+    if (!style || !style.fg || !style.bg) {
+      return TermStyle.default();
+    }
+  
+    let [fr, fg, fb] = parseRgb(style.fg);
+    let [br, bg, bb] = parseRgb(style.bg);
+  
+    const dimmedFg = [fr + rf, fg + gf, fb + bf];
+    const dimmedBg = [br + rf, bg + gf, bb + bf];
+  
+    return new TermStyle(
+      toRgbString(dimmedFg),
+      toRgbString(dimmedBg),
+      style.mode
+    );
+  }
+  
+
+  copyShadow(rect, rf = -40, gf = -40, bf = -40, dimMore = 20) {
+      const region = this.copyRegion(0, 0, this.height, this.width);
+      const t = rect.sceneY, l = rect.sceneX;
+      const r = l + rect.width, b = t + rect.height;
+
+      for (let row = 0; row < this.height; row++) {
+          for (let col = 0; col < this.width; col++) {
+              if (!this.isValidCoord(row, col)) continue;
+
+              let { style } = this.#BUFFER[row][col];
+
+              const isEdge = (
+                  (row === b && col > l && col <= r) ||
+                  (col === r && row > t && row < b)
+              );
+
+              this.#BUFFER[row][col].style = this.dimRgbStyles(
+                  style,
+                  isEdge ? rf - dimMore : rf,
+                  isEdge ? gf - dimMore : gf,
+                  isEdge ? bf - dimMore : bf
+              );
+          }
+      }
+
+      return region;
+  }
 
   pushRegion(src) {
     for (let y = 0; y < src.rect.height; y++) {
@@ -399,52 +352,12 @@ renderView(topRow, height) {
    */
   setChar(y, x, char = ' ', style = null) {
     if (this.isValidCoord(y, x)) {
-      const finalStyle = style ?? this.#BUFFER[y][x]?.style ?? this.#defaultStyle;
+      const finalStyle = TermStyle.fromObject(style ?? this.#defaultStyle, this.#BUFFER[y][x]?.style || null);
       this.#BUFFER[y][x] = { char, style: finalStyle };
       return true;
     }
     return false;
   }
-
-  moveRow(ys, yd) {
-    if (yd !== ys && this.isValidCoord(yd, 0)) {
-        const lf = this.copyRow(ys); // Always returns width cells
-        for (let x = 0; x < this.width; x++) {
-            this.setCell(yd, x, lf[x]);
-        }
-    }
-  }
-
-  copyRow(y) {
-    let line = [];
-    if (this.isValidCoord(y, 0)) {
-        for (let x = 0; x < this.width; x++) {
-            line.push(this.#BUFFER[y][x]);
-        }
-    } else {
-        for (let x = 0; x < this.width; x++) {
-            line.push({ char: ' ', style: this.#defaultStyle });
-        }
-    }
-    return line;
-  }
-
-  getCell(y, x) {
-    if (this.isValidCoord(y, x)) {
-      return this.#BUFFER[y][x];
-    }
-    return { char: ' ', style: this.#defaultStyle };
-  }
-
-  setCell(y, x, cell = { char: ' ', style: this.#defaultStyle }) {
-    if (this.isValidCoord(y, x)) {
-        const finalStyle = cell.style ?? this.#BUFFER[y][x]?.style ?? this.#defaultStyle;
-        this.#BUFFER[y][x] = { char: cell.char, style: finalStyle };
-        return true;
-    }
-    return false;
-  }
-
   /**
    * Sets a ansi color style at the specified coordinates.
    * @param y - Buffer y-coordinate.
@@ -454,7 +367,7 @@ renderView(topRow, height) {
    */
   setStyle(y, x, style = null) {
     if (this.isValidCoord(y, x)) {
-      const finalStyle = style ?? this.#defaultStyle ?? this.#BUFFER[y][x].style;
+      const finalStyle = TermStyle.fromObject(style ?? this.#defaultStyle, this.#BUFFER[y][x].style);
       this.#BUFFER[y][x].style = finalStyle;
       return true;
     }
@@ -492,13 +405,12 @@ renderView(topRow, height) {
         this.fillRect(y + 1, x + 1, h - 2, w - 2, fillStyle);
       }
     } else {
-      this.fillRect(y, x, h, w, fillStyle || style);
+      this.fillRect(y, x, h, w, fillStyle);
     }
   }
 
-  drawFrame(box = 0, y = 0, style=null, fillStyle=null) {
+  drawFrame(box = 0, y = 0, style=null) {
     this.drawBox(y, 0, this.#rect.height - y, this.#rect.width, box, style);
-    
   }
 
   drawBreak(y, x, width, box = 0, style=null, bookends = false) {
@@ -639,9 +551,9 @@ renderView(topRow, height) {
 
   drawText(text, y, x, style = null, renderRegion = false, maxWidth = -1) {
     text = this.peskyTabs(text);
-    let len = text.length;// maxWidth >= 0?Math.min(maxWidth, text.length):text.length;
+    let len = maxWidth >= 0?Math.min(maxWidth, text.length):text.length;
     for (let j = 0; j < len; j++) {
-        this.setChar(y, x + j, text[j], style);
+      this.setChar(y, x + j, text[j], style);
     }
     if (renderRegion) {
       this.renderRegion(y, x, 1, text.length);
@@ -671,7 +583,7 @@ renderView(topRow, height) {
   get y() { return this.#rect.y; }
 
   get rect() {
-    return this.#rect;//{...this.#rect};
+    return {...this.#rect};
   }
 
   pointInBuffer(dy, dx) {
@@ -767,210 +679,9 @@ class CUITermBuffer extends TermBuffer {
 }
 }
 
-class InteractiveTermBuffer extends TermBuffer {
-  constructor(height = 1000, width = 80, y = 0, x = 0, style = utils.COLORS.BACKGROUND) {
-    super(height, width, y, x, style);
-    this.currentStyle = this.defaultStyle;
-    this.scrollTop = 0; // Line index where the visible window starts
-    this.viewHeight = 25;
-    this.cursorX = 0;
-    this.cursorY = 0;
-    this.scrollRegion = null;
-    this.saveCursor = {y:1, x:1};
-        
-  }
-
-    xUpdate(delta) {
-        if (isNaN(delta)) return;
-        let newX = Math.min(this.width, this.cursorX + delta);
-        if (newX >= 0) {
-            this.cursorX = newX;
-        } 
-    }
-
-    yUpdate(delta) {
-        if (isNaN(delta)) return;
-        let newY = Math.min(this.height, this.cursorY + delta);
-        if (newY >= 0) {
-            this.cursorY = newY;
-        } 
-    }
-
-    writeChar(char, y=this.cursorY, x=this.cursorX) {
-        this.setChar(y, x, char, this.currentStyle);
-    }
-
-    moveCursorVertical(delta) {
-        if (!isNaN(delta)) {
-            this.cursorY = Math.max(0, this.cursorY + delta);
-            this.moveCursor();
-        }
-    }
-
-    moveCursorHorizontal(delta) {
-        if (!isNaN(delta)) {
-            this.cursorX = Math.min(this.width - 1, Math.max(0, this.cursorX + delta));
-            this.moveCursor();
-        }
-    }
-
-
-
-    moveCursor({x, y} = {x:0, y:0}) {
-        const visibleBottom = this.top + this.viewHeight - 1;
-        let row = y + this.cursorY + this.top - this.scrollTop
-        let col = x + this.cursorX + this.left;
-        
-        if (col > this.right) {
-            col = this.left+1;
-            row++;
-        }
-        if (row >= this.top && row <= visibleBottom) {
-            utils.QCODES.MOVE_CURSOR(row, col, 2);
-        } else {
-            utils.QCODES.CURSOR_HIDE()
-        }
-    }
-
-    removeCurrentLine() {
-        this.removeLine(--this.cursorY);
-    }
-
-    keepInScroll() {
-        if (!this.viewHeight) return; // fail-safe
-        const visibleBottom = this.scrollTop + this.viewHeight - 1;
-        if (this.cursorY > visibleBottom) {
-            this.scrollTop = this.cursorY - this.viewHeight + 1;
-        } else if (this.cursorY < this.scrollTop) {
-            this.scrollTop = this.cursorY;
-        }
-    }
-
-    insertChar(char) {
-        this.writeChar(char);
-        this.cursorX++;
-        if (!this.fullScreenMode) {
-            if (this.cursorX >= this.width) {
-                this.cursorX = 0;
-                this.cursorY++;
-            }
-        }
-    }
-    
-    update() {};
-    
-    eraseViewPort(top=0, bottom=this.viewHeight) {
-        let anchor = this.cursorY;
-        let ln = ' '.repeat(this.width-1);
-        for(let i = top; i < bottom; i++) {
-            this.writeLine(ln);
-            this.cursorY++;
-        }
-        this.cursorY = anchor;
-        this.scrollTop = anchor;
-        this.keepInScroll();
-    }
-
-  eraseLine(y) {
-      if (this.isValidCoord(y, 0)) {
-        for(let x = 0; x < this.width; x++) {
-          this.setCell(y, x, {char: ' ', style:this.currentStyle});
-        }
-      }
-  }
-
-  shiftUp(top, bottom, lines) {
-      // Validate inputs
-      if (lines <= 0 || top < 0 || bottom > this.height || top >= bottom) {
-          return; // Invalid parameters
-      }
-      lines = Math.min(lines, bottom - top); // Cap to scroll region size
-
-      // Shift rows up
-      let dest = top;
-      for (let t = top + lines; t < bottom; t++) {
-          this.moveRow(t, dest++);
-      }
-
-      // Clear bottom lines
-      for (let t = bottom - lines; t < bottom; t++) {
-          this.eraseLine(t);
-      }
-
-      this.update(); // Refresh display
-  }
-
-  shiftDown(top, bottom, lines) {
-      if (lines <= 0 || top < 0 || bottom > this.height || top >= bottom) {
-          return;
-      }
-      lines = Math.min(lines, bottom - top);
-
-      let dest = bottom - 1;
-      for (let t = bottom - lines - 1; t >= top; t--) {
-          this.moveRow(t, dest--);
-      }
-
-      for (let t = top; t < top + lines; t++) {
-          this.eraseLine(t);
-      }
-
-      this.update();
-  }
-
-  adjustScrollRegion(newTop, newBottom, tDelta) {
-    if (tDelta === 0) return; // No vertical shift
-
-    const oldTop = this.scrollRegion.top;
-    const oldBottom = this.scrollRegion.bottom;
-
-    if (tDelta > 0) {
-        // Scroll region moved down (e.g., 3->4), shift content up
-        for (let y = newTop; y <= newBottom; y++) {
-            const srcY = y + tDelta;
-            if (srcY <= oldBottom) {
-                this.moveRow(srcY, y);
-            } else {
-                this.eraseLine(y);
-            }
-        }
-    } else if (tDelta < 0) {
-        // Scroll region moved up (e.g., 4->3), shift content down
-        for (let y = newBottom; y >= newTop; y--) {
-            const srcY = y + tDelta;
-            if (srcY >= oldTop) {
-                this.moveRow(srcY, y);
-            } else {
-                this.eraseLine(y);
-            }
-        }
-    }
-
-    this.update();
-  }
-
-    writeLine(line, style=null) {
-        this.drawText(line, this.cursorY, 0, style || this.defaultStyle);
-    }
-
-    insertString(str, style=null) {
-        for(let char of str) {
-            this.insertChar(char);
-        }
-    }    
-
-    deleteRange(n) {
-      for(let p = this.cursorX; p < this.width-2;p++) {
-        this.setCell(this.cursorY, p, this.getCell(this.cursorY, p+1));
-      }
-      this.setCell(this.cursorY, this.width-1, {char: "-", style:utils.COLORS.RED});
-      this.update();
-    }
-
-}
 
 module.exports = {
   TermBuffer,
-  CUITermBuffer,
-  InteractiveTermBuffer
+  CUITermBuffer
+  
 };

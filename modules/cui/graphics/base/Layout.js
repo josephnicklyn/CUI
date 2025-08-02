@@ -359,7 +359,7 @@ class Layout extends Node {
     }
 
 
-    forScroll(event) {
+    forScroll(event, target=this) {
         if (event.type !== 'MouseEvent') return false;
         if (event.button !== 'left' || !['mousedown', 'mousemove'].includes(event.action)) {
             return this.handleScrollWheel(event);
@@ -370,7 +370,7 @@ class Layout extends Node {
 
         this.updateScrollPosition(scrollbar, event);
         this.onScroll?.();
-        this.render(true);
+        target.render(true);
         return true;
     }
 

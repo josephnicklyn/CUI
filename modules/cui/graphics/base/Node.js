@@ -1,6 +1,6 @@
 const Rect = require("./Rect");
 const termutils = require("./termutils");
-const TermBuffer = require("./TermBuffer")
+const {CUITermBuffer} = require("./TermBuffer")
 class Node extends Rect {
     
     #attributes = {};
@@ -93,7 +93,7 @@ class Node extends Rect {
     }
 
     getStage() {
-        return TermBuffer.instance; 
+        return CUITermBuffer.instance; 
     }
     
     render(now=false) {

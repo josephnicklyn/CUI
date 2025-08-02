@@ -1,5 +1,5 @@
 class TermStyle {
-    constructor(fg = null, bg = null, mode = null) {
+    constructor(fg = null, bg = null, mode = 0) {
         this.fg = fg;   // e.g., "255;255;255"
         this.bg = bg;   // e.g., "0;0;0"
         this.mode = mode; // e.g., "1;4" (bold+underline)
@@ -28,7 +28,7 @@ class TermStyle {
     }
 
     static default() {
-        return new TermStyle("255;255;255", "0;0;0", "1"); // or define a theme default
+        return new TermStyle("255;255;255", "0;0;0", "0"); // or define a theme default
     }
 }
 

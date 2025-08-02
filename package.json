@@ -12,6 +12,7 @@
   "dependencies": {
     "copy-paste": "^2.1.1",
     "fast-xml-parser": "^5.2.1",
-    "node-html-parser": "^7.0.1"
+    "node-html-parser": "^7.0.1",
+    "ssh2": "^1.16.0"
   }
 }

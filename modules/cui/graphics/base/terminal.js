@@ -116,6 +116,8 @@ function decodeMouseEvent(code, isRelease, x, y) {
 }
 
 function exitApplication(sayGoodBye=false) {
+    process.stdin.write('\x1b[?1049l');
+
     process.stdin.write('\x1b[?1000l');
     process.stdin.write('\x1b[?1002l');
     process.stdin.write('\x1b[?1003l');
@@ -244,7 +246,8 @@ function parseKey(buffer) {
         type: "KeyEvent",
         raw: str,
         bytes: code,
-        name
+        name,
+        xraw: bytes
     };
 }
 
@@ -267,11 +270,13 @@ const begin = (mainHandler, appStartHandler, payload) => {
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
 
+    process.stdin.write('\x1b[?1049h');
+
     process.stdin.write('\x1b[?1000h');
     process.stdin.write('\x1b[?1002h');
     process.stdin.write('\x1b[?1003h');
     process.stdin.write('\x1b[?1006h');
-    process.stdout.write('\x1b[?25l');
+    process.stdin.write('\x1b[?25l');
     
 
 
@@ -291,7 +296,6 @@ const begin = (mainHandler, appStartHandler, payload) => {
     
     
     process.stdin.on('data', (data) => {
-        
         const sgrMatch = /\x1b\[<(\d+);(\d+);(\d+)([mM])/.exec(data);
         if (sgrMatch) {
             const [, btnCodeStr, xStr, yStr, type] = sgrMatch;
@@ -301,7 +305,7 @@ const begin = (mainHandler, appStartHandler, payload) => {
             const isRelease = type === 'm';
 
             const mouseEvent = decodeMouseEvent(btnCode, isRelease, x, y);
-           
+            mouseEvent.rawData = data.toString();
             let target_handler =__ACTIVE_INPUT_HANDLER;
             target_handler = __INPUT_TARGET.peek(target_handler);
             target_handler(mouseEvent);
@@ -317,7 +321,7 @@ const begin = (mainHandler, appStartHandler, payload) => {
                     return;
                 }
             }
-
+            keyEvent.rawData = data.toString();
             let target_handler =__ACTIVE_INPUT_HANDLER;
             let alt_handler = __INPUT_TARGET.peek(target_handler);
             let response = target_handler(keyEvent, alt_handler);

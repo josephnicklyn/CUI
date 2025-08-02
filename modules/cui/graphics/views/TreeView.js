@@ -38,9 +38,10 @@ class TreeView extends Layout {
     }
 
     render() {
+        this.drawTree();
+        
         this.getStage().sceneDrawFrame(0, this.rect, termutils.COLORS.BORDER);
         this.drawVScrollbar();
-        this.drawTree();
         this.drawHScrollbar();
     }
 
@@ -245,7 +246,6 @@ class TreeView extends Layout {
         //     if (delta < 0 && this.scrollTop === 0)
         //         return;
         //     let oldTop = this.scrollTop;
-        //     console.log("\x1b[1;1H", {sc:this.scrollTop, delta})
         //     this.scrollTop = this.scrollTop - delta;
         //     if (oldTop !== this.scrollTop) {
         //         this.update();

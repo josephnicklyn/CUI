@@ -10,7 +10,7 @@ class WebView extends FlexView {
         this.content = this.addChild(new DatePicker({flex: 1}));
         this.comboBox = this.addChild(new ComboBox({readonly: true}));
         this.comboBox.setOnActionListener((value) => {
-            console.log("\x1b[3;1H", `You selected: ${value}`);
+            // console.log("\x1b[3;1H", `You selected: ${value}`);
         })
     }
 
